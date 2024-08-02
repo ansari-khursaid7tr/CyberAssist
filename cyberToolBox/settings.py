@@ -47,17 +47,7 @@ INSTALLED_APPS = [
     'geolocation_finder',
     'dns_lookup',
     'ssl_checker',
-    'compressor',
 ]
-
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-]
-
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,12 +83,12 @@ WSGI_APPLICATION = 'cyberToolBox.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
