@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+set -e
+set -x
 
 echo "Building project packages..."
 python3 -m pip install -r requirements.txt
@@ -8,3 +11,5 @@ python3 manage.py collectstatic --noinput
 
 echo "Compressing static files..."
 python3 manage.py compress
+
+echo "Build script completed successfully"
