@@ -1,0 +1,100 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %}Keylogger {% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">Keylogger</h3>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="mb-3 text-center">Input</h6>
+                                    <textarea id="input-area" class="form-control" rows="12" placeholder="Type here to log keys..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="mb-3 text-center">Logged Keys</h6>
+                                    <div id="logged-keys" class="border p-3" style="min-height: 300px; max-height: 500px; overflow-y: auto; white-space: pre-wrap;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let buffer = '';
+const inputArea = document.getElementById('input-area');
+const loggedKeys = document.getElementById('logged-keys');
+
+const specialKeysMap = {
+    'Shift': '⇧',
+    'Tab': '⇥',
+    ' ': '␣',
+    'CapsLock': '⇪',
+    'Enter': '⏎',
+    'Control': '⌃',
+    'Alt': '⎇',
+    'Meta': '⌘',  // For Mac Command key
+    'ArrowUp': '↑',
+    'ArrowDown': '↓',
+    'ArrowLeft': '←',
+    'ArrowRight': '→',
+    'Backspace': '⌫',
+    'Delete': '⌦'
+};
+
+inputArea.addEventListener('keyup', (e) => {
+    let key = e.key;
+    if (specialKeysMap[key]) {
+        key = specialKeysMap[key];
+    }
+    buffer += key;
+    if (buffer.length >= 10) {
+        sendKeys(buffer);
+        buffer = '';
+    }
+    loggedKeys.innerHTML += key;
+});
+
+function sendKeys(keys) {
+    fetch('/keylogger/log/', {
+        method: 'POST',
+        body: JSON.stringify({keys: keys}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            console.error('Failed to log keys');
+        }
+    });
+}
+
+function resetForm() {
+    // Clear the input area
+    document.getElementById('input-area').value = '';
+
+    // Clear the logged keys display
+    document.getElementById('logged-keys').innerHTML = '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Password Strength Checker</h5>
+                    <hr />
+                    <p class="card-text">Assess the robustness of your passwords to ensure they are strong and secure against potential threats.</p>
+                    <a href="{% url 'password_strength:checker' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Keylogger</h5>
+                    <hr />
+                    <p class="card-text">Monitor and record keyboard inputs to detect unauthorized activity.</p>
+                    <a href="{% url 'keylogger:logger' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Cryptography Tool</h5>
+                    <hr />
+                    <p class="card-text">Encrypt and decrypt messages to secure sensitive information.</p>
+                    <a href="{% url 'cryptography:encrypt_decrypt' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Hash Generator</h5>
+                    <hr />
+                    <p class="card-text">Attempt to generate all the possible hash values from the given plain text.</p>
+                    <a href="{% url 'password_cracker:cracker' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Phishing URL Detector</h5>
+                    <hr />
+                    <p class="card-text">A tool that checks URLs for phishing indicators to determine their safety.</p>
+                    <a href="{% url 'phishing_detector:phishing_detector' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">IP Geolocation Finder</h5>
+                    <hr />
+                    <p class="card-text">A tool that locates the geographical position of an IP address.</p>
+                    <a href="{% url 'geolocation_finder:geolocation_finder' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">DNS Lookup Tool</h5>
+                    <hr />
+                    <p class="card-text">Quickly retrieves detailed DNS records for a specified domain name.</p>
+                    <a href="{% url 'dns_lookup:dns_lookup' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">SSL/TLS Certificate Checker</h5>
+                    <hr />
+                    <p class="card-text">Check the validity and security of an SSL/TLS certificate for any domain.</p>
+                    <a href="{% url 'ssl_checker:ssl_tls_checker' %}" class="btn btn-primary">Go to Tool</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

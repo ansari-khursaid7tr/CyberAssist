@@ -1,0 +1,70 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %} Password Strength Checker {% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">Password Strength Checker</h3>
+                    <hr />
+                    <form id="passwordForm" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Enter Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" value="{{ password }}" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                            <button type="submit" class="btn btn-primary">Check Strength</button>
+                            <button type="button" class="btn btn-secondary" onclick="goBack()">Back</button>
+                        </div>
+                    </form>
+                    {% if strength %}
+                    <div id="strengthResult" class="mt-3 alert {{ alert_class }}" role="alert">
+                        Password strength: <strong>{{ strength }}</strong>
+                    </div>
+                    {% if strength == 'Weak' or strength == 'Moderate' %}
+                    <div id="bestPractices" class="mt-4">
+                        <h5>Best Practices for Strong Passwords:</h5>
+                        <ul>
+                            <li>Use at least 12 characters.</li>
+                            <li>Include both uppercase and lowercase letters.</li>
+                            <li>Add numbers and special characters (e.g., @, #, $).</li>
+                            <li>Avoid common words and predictable patterns.</li>
+                            <li>Use a mix of different types of characters.</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function resetForm() {
+        // Clear the password input field
+        document.getElementById('password').value = '';
+
+        // Hide the strength result div
+        var strengthResult = document.getElementById('strengthResult');
+        if (strengthResult) {
+            strengthResult.style.display = 'none';
+        }
+
+        // Hide the best practices section
+        var bestPractices = document.getElementById('bestPractices');
+        if (bestPractices) {
+            bestPractices.style.display = 'none';
+        }
+    }
+
+    function goBack() {
+        window.location.href = "{% url 'home' %}";
+    }
+</script>
+{% endblock %}

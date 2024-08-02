@@ -1,0 +1,167 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %} Cryptography Tool {% endblock title %}
+
+{% block content %}
+<div class="container mt-4 border p-4 rounded">
+    <h2 class="text-center">Cryptography Tool</h2>
+    <hr />
+    <div class="row">
+        <!-- Input Block -->
+        <div class="col-md-4">
+            <div class="card shadow-sm" style="height: 100%;">
+                <div class="card-body d-flex flex-column h-100">
+                    <h5 class="mb-3 text-center">Input</h5>
+                    <textarea id="text" class="form-control flex-fill" placeholder="Type here..." required></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mid Block -->
+        <div class="col-md-4">
+            <div class="card shadow-sm" style="height: 100%;">
+                <div class="card-body d-flex flex-column h-100">
+                    <h5 class="mb-4 text-center">Options</h5>
+                    <div class="mb-4">
+                        <input type="radio" id="encrypt" name="operation" value="encrypt" checked>
+                        <label for="encrypt" class="form-check-label">Encrypt</label>
+                        <input type="radio" id="decrypt" name="operation" value="decrypt">
+                        <label for="decrypt" class="form-check-label">Decrypt</label>
+                    </div>
+                    <div class="mb-4">
+                        <label for="algorithm" class="form-label">Algorithm:</label>
+                        <select id="algorithm" class="form-select form-select-sm w-100">
+                            <option value="caesar" selected>Caesar Cipher</option>
+                            <!--option value="vigenere">Vigenère Cipher</option-->
+                            <option value="morse">Morse Code</option>
+                            <option value="base64">Base64</option>
+                            <option value="rot13">ROT13</option>
+                        </select>
+                    </div>
+                    <div class="mb-4" id="key-input">
+                        <label for="key" class="form-label">Key:</label>
+                        <div class="input-group input-group-sm w-85">
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeKey(-1)">-</button>
+                            <input type="text" id="key" class="form-control text-center" value="3">
+                            <span id="key-mapping" class="input-group-text"></span>
+                            <button type="button" class="btn btn-outline-secondary" onclick="changeKey(1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Block -->
+        <div class="col-md-4">
+            <div class="card shadow-sm" style="height: 100%;">
+                <div class="card-body d-flex flex-column h-100">
+                    <h5 class="mb-3 text-center">Output</h5>
+                    <pre id="result" class="border p-3 flex-fill" style="overflow-y: auto; word-wrap: break-word; white-space: pre-wrap;"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3 d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textArea = document.getElementById('text');
+    const algorithmSelect = document.getElementById('algorithm');
+    const keyInput = document.getElementById('key-input');
+    const keyField = document.getElementById('key');
+    const keyMapping = document.getElementById('key-mapping');
+    const operationRadios = document.querySelectorAll('input[name="operation"]');
+
+    function updateResult() {
+        const text = textArea.value;
+        const operation = document.querySelector('input[name="operation"]:checked').value;
+        const algorithm = algorithmSelect.value;
+        const key = keyField.value;
+
+        fetch('{% url "cryptography:encrypt_decrypt" %}', {
+            method: 'POST',
+            body: JSON.stringify({ text: text, operation: operation, algorithm: algorithm, key: key }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('result').textContent = data.result || '';
+        });
+
+        updateKeyMapping();
+    }
+
+    function updateKeyMapping() {
+        const algorithm = algorithmSelect.value;
+        const key = parseInt(keyField.value, 10) || 0;
+        const operation = document.querySelector('input[name="operation"]:checked').value;
+
+        console.log(`Updating key mapping: algorithm=${algorithm}, key=${key}, operation=${operation}`); // Debugging line
+
+        if (algorithm === 'caesar') {
+            const fromChar = String.fromCharCode(97); // 'a'
+            const toChar = String.fromCharCode(((97 + key - 97) % 26) + 97); // Caesar Cipher shift
+            const direction = operation === 'encrypt' ? '→' : '←';
+            keyMapping.textContent = `(${fromChar} ${direction} ${toChar})`;
+        } else if (algorithm === 'vigenere') {
+            const fromChar = String.fromCharCode(97); // 'a'
+            const keyShift = key % 26; // Calculate shift based on key
+            const toChar = String.fromCharCode(((97 + keyShift - 97) % 26) + 97); // Apply shift
+            const direction = operation === 'encrypt' ? '→' : '←';
+            keyMapping.textContent = `(${fromChar} ${direction} ${toChar})`;
+            console.log(`Vigenère Cipher Mapping: ${keyMapping.textContent}`);
+        } else if (algorithm === 'morse') {
+            keyMapping.textContent = '';
+        } else {
+            keyMapping.textContent = '';
+        }
+    }
+
+    textArea.addEventListener('input', updateResult);
+    algorithmSelect.addEventListener('change', function() {
+        if (this.value === 'rot13' || this.value === 'base64' || this.value === 'morse') {
+            keyInput.style.display = 'none';
+        } else {
+            keyInput.style.display = 'block';
+        }
+        updateResult(); // Update result based on the new algorithm
+        updateKeyMapping(); // Ensure key mapping is updated after algorithm change
+    });
+
+    operationRadios.forEach(radio => {
+        radio.addEventListener('change', updateResult);
+    });
+
+    keyField.addEventListener('input', updateResult);
+
+    function changeKey(amount) {
+        let currentKey = parseInt(keyField.value, 10) || 0;
+        keyField.value = Math.max(0, currentKey + amount);
+        updateResult();
+    }
+
+    window.changeKey = changeKey;
+
+    function resetForm() {
+        textArea.value = '';
+        document.getElementById('encrypt').checked = true;
+        algorithmSelect.value = 'caesar';
+        keyField.value = '3';
+        keyInput.style.display = 'block';
+        updateResult();
+    }
+
+    window.resetForm = resetForm;
+
+    // Initial update
+    updateResult();
+});
+</script>
+{% endblock %}

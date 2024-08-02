@@ -1,0 +1,103 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %} Hash Generator {% endblock title %}
+
+{% block content %}
+<div class="container mt-4 border p-4 rounded">
+    <h2 class="text-center">Hash Generator</h2>
+    <hr />
+    <form id="hash-form">
+        <div class="row">
+            <!-- Input Block -->
+            <div class="col-md-4">
+                <div class="card shadow-sm" style="height: 100%;">
+                    <div class="card-body d-flex flex-column h-100">
+                        <h5 class="mb-3 text-center">Input</h5>
+                        <textarea id="hash" class="form-control flex-fill" placeholder="Enter plain text to generate hash value..." required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Block -->
+            <div class="col-md-4">
+                <div class="card shadow-sm" style="height: 100%;">
+                    <div class="card-body d-flex flex-column h-100">
+                        <h5 class="mb-4 text-center">Options</h5>
+                        <div class="mb-4">
+                            <label for="hash_type" class="form-label">Hash Type:</label>
+                            <select id="hash_type" class="form-select form-select-sm w-100">
+                                <option value="md5">MD5</option>
+                                <option value="sha1">SHA1</option>
+                                <option value="sha224">SHA224</option>
+                                <option value="sha256">SHA256</option>
+                                <option value="sha384">SHA384</option>
+                                <option value="sha512">SHA512</option>
+                                <option value="blake2b">Blake2b</option>
+                                <option value="blake2s">Blake2s</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Block -->
+            <div class="col-md-4">
+                <div class="card shadow-sm" style="height: 100%;">
+                    <div class="card-body d-flex flex-column h-100">
+                        <h4 class="mb-3 text-center">Result</h4>
+                        <pre id="result" class="border p-3 flex-fill" style="overflow-y: auto; word-wrap: break-word; white-space: pre-wrap;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+            <button type="button" class="btn btn-primary" onclick="generateHash()">Generate Hash</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const hashField = document.getElementById('hash');
+    const hashTypeSelect = document.getElementById('hash_type');
+    const resultArea = document.getElementById('result');
+
+    function updateResult(data) {
+        resultArea.textContent = data.result || '';
+    }
+
+    window.generateHash = function() {
+        const hash = hashField.value.trim();
+        const hashType = hashTypeSelect.value;
+
+        fetch('{% url "password_cracker:cracker" %}', {
+            method: 'POST',
+            body: JSON.stringify({ text: hash, hash_type: hashType }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => updateResult(data))
+        .catch(error => {
+            console.error('Error:', error);
+            resultArea.textContent = 'An error occurred. Please check the console for details.';
+        });
+    }
+
+    window.resetForm = function() {
+        hashField.value = '';
+        hashTypeSelect.value = 'md5';
+        resultArea.textContent = '';
+    }
+});
+</script>
+{% endblock %}

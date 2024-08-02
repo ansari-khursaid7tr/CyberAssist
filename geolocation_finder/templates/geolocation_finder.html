@@ -1,0 +1,91 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %}IP Geolocation Finder{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">IP Geolocation Finder</h3>
+                    <hr />
+                    <form id="geolocation-form" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="ip-address" class="form-label">Enter IP address</label>
+                            <input type="text" id="ip-address" name="ip-address" class="form-control" placeholder="Enter IP address" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                            <button type="button" class="btn btn-primary" onclick="findGeolocation()">Find Geolocation</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+                        </div>
+                    </form>
+                    <div id="result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ipAddressField = document.getElementById('ip-address');
+    const resultDiv = document.getElementById('result');
+
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+        resultDiv.innerHTML = '';
+        resultDiv.appendChild(alertDiv);
+    }
+
+    function findGeolocation() {
+        const ipAddress = ipAddressField.value.trim();
+
+        fetch('{% url "geolocation_finder:geolocation_finder" %}', {
+            method: 'POST',
+            body: JSON.stringify({ ip: ipAddress }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                showAlert(data.error, 'danger');
+            } else {
+                let message = `<strong>IP Address:</strong> ${data.ip}<br>`;
+                message += `<strong>Country:</strong> ${data.country}<br>`;
+                message += `<strong>ISP:</strong> ${data.isp}<br>`;
+                message += `<strong>Region:</strong> ${data.region}<br>`;
+                message += `<strong>City:</strong> ${data.city}<br>`;
+                message += `<strong>Latitude:</strong> ${data.latitude}<br>`;
+                message += `<strong>Longitude:</strong> ${data.longitude}`;
+                showAlert(message, 'success');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('An error occurred. Please try again.', 'danger');
+        });
+    }
+
+    function resetForm() {
+        ipAddressField.value = '';
+        resultDiv.innerHTML = '';
+    }
+
+    window.findGeolocation = findGeolocation;
+    window.resetForm = resetForm;
+});
+</script>
+{% endblock %}
