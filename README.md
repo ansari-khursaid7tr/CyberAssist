@@ -112,6 +112,3 @@ We welcome contributions to improve the Security Tools Suite! Please follow thes
 ---
 
 Feel free to reach out if you have any questions or need further assistance. Happy securing!
-```
-
-This `README.md` provides a comprehensive overview of your project, its features, installation instructions, usage guide, and contribution guidelines.
