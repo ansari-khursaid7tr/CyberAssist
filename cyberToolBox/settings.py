@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'geolocation_finder',
     'dns_lookup',
     'ssl_checker',
+    'osint_aggregator',
 ]
 
 MIDDLEWARE = [
