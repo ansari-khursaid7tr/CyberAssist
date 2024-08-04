@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'ssl_checker',
     'osint_aggregator',
     'port_scanner',
+    'api_security_tester',
 ]
 
 MIDDLEWARE = [
