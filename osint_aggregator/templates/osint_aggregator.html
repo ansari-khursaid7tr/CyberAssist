@@ -1,0 +1,123 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %}OSINT Aggregator{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center"> OSINT Aggregator</h3>
+                    <hr />
+                    <form id="osint-form">
+                        <div class="mb-3">
+                            <label for="target" class="form-label">Enter Domain or Email:</label>
+                            <input type="text" class="form-control" id="target" placeholder="Enter a domain or email address" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Gather Intelligence</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+                        </div>
+                    </form>
+                    <div id="result" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('osint-form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const target = document.getElementById('target').value.trim();
+
+        fetch('{% url "osint_aggregator:osint_aggregator" %}', {
+            method: 'POST',
+            body: new URLSearchParams({
+                'target': target
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let resultHTML = '';
+            for (const [key, value] of Object.entries(data)) {
+                resultHTML += `<div class="card mb-3">
+                                  <div class="card-header bg-primary text-white">
+                                    <strong><i class="fas fa-info-circle"></i> ${formatKey(key)}</strong>
+                                  </div>
+                                  <div class="card-body bg-light">`;
+
+                if (typeof value === 'object' && !Array.isArray(value)) {
+                    for (const [subKey, subValue] of Object.entries(value)) {
+                        if (Array.isArray(subValue)) {
+                            resultHTML += `<div><strong>${formatKey(subKey)}:</strong><ul>`;
+                            subValue.forEach(item => {
+                                resultHTML += `<li>${item}</li>`;
+                            });
+                            resultHTML += `</ul></div>`;
+                        } else {
+                            resultHTML += `<div><strong>${formatKey(subKey)}:</strong> ${formatValue(subValue)}</div>`;
+                        }
+                    }
+                } else if (Array.isArray(value)) {
+                    resultHTML += '<ul>';
+                    value.forEach(item => {
+                        resultHTML += `<li>${item}</li>`;
+                    });
+                    resultHTML += '</ul>';
+                } else {
+                    resultHTML += `<div>${value}</div>`;
+                }
+                resultHTML += '</div></div>';
+            }
+            resultDiv.innerHTML = resultHTML;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resultDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+        });
+    });
+
+    window.resetForm = function() {
+        document.getElementById('target').value = '';
+        resultDiv.innerHTML = '';
+    }
+
+    function formatKey(key) {
+        return key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function formatValue(value) {
+        if (Array.isArray(value)) {
+            return value.map(item => formatValue(item)).join('<br>');
+        } else if (typeof value === 'string' && value.includes('datetime.datetime')) {
+            return formatDate(value);
+        } else {
+            return value;
+        }
+    }
+
+    function formatDate(dateStr) {
+        const dateMatches = dateStr.match(/datetime.datetime\(([^)]+)\)/g);
+        if (dateMatches) {
+            return dateMatches.map(date => {
+                const parts = date.replace('datetime.datetime(', '').replace(')', '').split(', ');
+                const dateObj = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]));
+                return dateObj.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+            }).join('<br>');
+        }
+        return dateStr;
+    }
+});
+</script>
+{% endblock %}

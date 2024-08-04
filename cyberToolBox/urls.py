@@ -30,4 +30,5 @@ urlpatterns = [
     path('geolocation-finder/', include('geolocation_finder.urls')),
     path('dns-lookup/', include('dns_lookup.urls')),
     path('ssl-checker/', include('ssl_checker.urls')),
+    path('osint-aggregator/', include('osint_aggregator.urls')),
 ]
