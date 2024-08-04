@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'dns_lookup',
     'ssl_checker',
     'osint_aggregator',
+    'port_scanner',
 ]
 
 MIDDLEWARE = [
