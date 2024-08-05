@@ -1,0 +1,112 @@
+{% extends "main/templates/base.html" %}
+{% block title %}API Security Tester{% endblock title %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">API Security Tester</h3>
+                    <hr />
+                    <form id="api-test-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="url" class="form-label">API URL:</label>
+                            <input type="url" class="form-control" id="url" name="url" placeholder="Enter API URL" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="method" class="form-label">Method:</label>
+                            <select class="form-select" id="method" name="method">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="headers" class="form-label">Headers (optional, in JSON format):</label>
+                            <textarea class="form-control" id="headers" name="headers" rows="3" placeholder='{"Authorization": "Bearer token"}'></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Data (optional, in JSON format):</label>
+                            <textarea class="form-control" id="data" name="data" rows="3" placeholder='{"key": "value"}'></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="reset" class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-shield-alt"></i> Test API</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+                        </div>
+                    </form>
+                    <div id="loading" class="text-center mt-4" style="display: none;">
+                        <hr />
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Testing API security... Please wait.</p>
+                    </div>
+                    <div id="results" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('api-test-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    var loadingDiv = document.getElementById('loading');
+    var resultsDiv = document.getElementById('results');
+
+    loadingDiv.style.display = 'block';
+    resultsDiv.innerHTML = '';
+
+    fetch('{% url "api_security_tester:api_security_tester" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingDiv.style.display = 'none';
+        resultsDiv.innerHTML = `
+            <div class="card mt-3">
+                <div class="card-header bg-primary text-white">
+                    <strong><i class="fas fa-shield-alt"></i> API Security Test Results</strong>
+                </div>
+                <div class="card-body bg-light">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>Result</th>
+                                <th>Details</th>
+                                <th>Status Code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.results.map(result => `
+                                <tr>
+                                    <td>${result[0]}</td>
+                                    <td><span class="badge bg-${result[1] === 'Passed' ? 'success' : result[1] === 'Warning' ? 'warning' : 'danger'}">${result[1]}</span></td>
+                                    <td>${result[2]}</td>
+                                    <td>${result[3] !== null ? result[3] : 'N/A'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        loadingDiv.style.display = 'none';
+        resultsDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+    });
+});
+
+document.querySelector('button[type="reset"]').addEventListener('click', function() {
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('loading').style.display = 'none';
+});
+</script>
+{% endblock %}

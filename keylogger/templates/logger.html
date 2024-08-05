@@ -30,6 +30,7 @@
                     </div>
                     <div class="mt-3 d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary" onclick="resetForm()"><i class="fas fa-redo"></i> Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="downloadLogs()"><i class="fas fa-download"></i> Download Logs</button>
                         <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
                     </div>
                 </div>
@@ -96,5 +97,26 @@ function resetForm() {
     // Clear the logged keys display
     document.getElementById('logged-keys').innerHTML = '';
 }
+
+function downloadLogs() {
+    // Create a Blob from the logged keys content
+    const text = loggedKeys.innerText;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'logged_keys.txt';
+
+    // Append the link to the body and trigger a click
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 </script>
 {% endblock %}
