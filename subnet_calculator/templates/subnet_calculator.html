@@ -1,0 +1,121 @@
+{% extends "main/templates/base.html" %}
+{% block title %}Subnet Calculator{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Subnet Calculator Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">Subnet Calculator</h3>
+                    <hr />
+                    <form method="post" id="subnet-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="ip_address" class="form-label">IP Address</label>
+                            <input type="text" class="form-control" id="ip_address" name="ip_address" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subnet_mask" class="form-label">Subnet Mask</label>
+                            <input type="text" class="form-control" id="subnet_mask" name="subnet_mask" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="reset" class="btn btn-secondary"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-calculator"></i> Calculate</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Subnet Calculation Results -->
+
+            {% if error_message %}
+            <div class="alert alert-danger mt-4" role="alert">
+                <h4 class="alert-heading">Error</h4>
+                <p>{{ error_message }}</p>
+            </div>
+            {% elif ip_address %}
+            <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Input</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-laptop"></i> <strong>IP Address:</strong> {{ ip_address }}</p>
+                                <p><i class="fas fa-mask"></i> <strong>Subnet Mask:</strong> {{ subnet_mask }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">Network Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-network-wired"></i> <strong>Network Address:</strong> {{ network_address }}</p>
+                                <p><i class="fas fa-broadcast-tower"></i> <strong>Broadcast Address:</strong> {{ broadcast_address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">Usable Addresses</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="h2 text-center"><i class="fas fa-users"></i> {{ num_addresses }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="card-title mb-0">Host Mask</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="h4 text-center"><i class="fas fa-fingerprint"></i> {{ hostmask }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">Prefix Length</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="h2 text-center"><i class="fas fa-ruler"></i> {{ prefixlen }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.querySelector('button[type="reset"]');
+    const resultCard = document.querySelector('.card.shadow-sm.mt-4');
+    const errorMessage = document.querySelector('.alert.alert-danger');
+
+    resetButton.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent default reset behavior
+        document.getElementById('subnet-form').reset(); // Reset form fields
+        if (resultCard) {
+            resultCard.style.display = 'none'; // Hide results
+        }
+        if (errorMessage) {
+            errorMessage.style.display = 'none'; // Hide error message
+        }
+    });
+});
+</script>
+{% endblock %}

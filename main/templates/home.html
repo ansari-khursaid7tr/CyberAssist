@@ -142,4 +142,53 @@
         </div>
     </div>
 </div>
+<br>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-network-wired" style="font-size: 1.5rem; color: #007bff; margin-right: 0.5rem;"></i>
+                        Subnet Calculator</h5>
+                    <hr />
+                    <p class="card-text">Calculate IP subnets, network addresses, and broadcast addresses for efficient network management.</p>
+                    <a href="{% url 'subnet_calculator:subnet_calculator' %}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-network-wired" style="font-size: 1.5rem; color: #007bff; margin-right: 0.5rem;"></i>
+                        Port Scanner</h5>
+                    <hr />
+                    <p class="card-text">Identify open ports and services on a target system to assess network security and uncover vulnerabilities.</p>
+                    <a href="{% url 'port_scanner:port_scanner' %}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-shield-alt" style="font-size: 1.5rem; color: #007bff; margin-right: 0.5rem;"></i>
+                        API Security Tester</h5>
+                    <hr />
+                    <p class="card-text">Analyze and identify vulnerabilities in your APIs to ensure they are secure against potential threats.</p>
+                    <a href="{% url 'api_security_tester:api_security_tester' %}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Go to Tool</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card tool-item" style="width: 100%;">
+                <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-mask" style="font-size: 1.5rem; color: #007bff; margin-right: 0.5rem;"></i>
+                        Social Engineering Simulator</h5>
+                    <hr />
+                    <p class="card-text">Simulates social engineering attacks to test and improve organizational resilience against manipulative tactics and phishing.</p>
+                    <a href="{% url 'social_engineering:social_engineering_simulator' %}" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Go to Tool</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
