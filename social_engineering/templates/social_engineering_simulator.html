@@ -1,0 +1,74 @@
+{% extends "main/templates/base.html" %}
+{% block title %}Social Engineering Simulator{% endblock title %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">Social Engineering Simulator</h3>
+                    <hr />
+                    <div id="scenario-container">
+                        <h6 class="text-primary">{{ scenario.title }} : <span class="lead mb-2" style="color:black;">{{ scenario.description }}</span> </h6>
+                        <br>
+                        <form id="scenario-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="scenario_id" value="{{ scenario_id }}">
+                            {% for option in scenario.options %}
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="selected_option" id="option-{{ forloop.counter0 }}" value="{{ forloop.counter0 }}" required>
+                                    <label class="form-check-label" for="option-{{ forloop.counter0 }}">
+                                        {{ option.text }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Answer</button>
+                                <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="result-container" class="mt-4" style="display: none;"></div>
+                    <div class="text-center mt-3">
+                        <button id="next-scenario" class="btn btn-primary" style="display: none;"><i class="fas fa-arrow-right"></i> Next Scenario</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('scenario-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+
+    fetch('{% url "social_engineering:social_engineering_simulator" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        var resultContainer = document.getElementById('result-container');
+        resultContainer.innerHTML = `
+            <div class="alert ${data.is_correct ? 'alert-success' : 'alert-danger'}">
+                <h5 class="alert-heading">${data.is_correct ? 'Correct!' : 'Incorrect.'}</h5>
+                <p>${data.explanation}</p>
+            </div>
+        `;
+        resultContainer.style.display = 'block';
+        document.getElementById('next-scenario').style.display = 'inline-block';
+        document.getElementById('scenario-form').style.display = 'none';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        var resultContainer = document.getElementById('result-container');
+        resultContainer.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+        resultContainer.style.display = 'block';
+    });
+});
+
+document.getElementById('next-scenario').addEventListener('click', function() {
+    location.reload();
+});
+</script>
+{% endblock %}

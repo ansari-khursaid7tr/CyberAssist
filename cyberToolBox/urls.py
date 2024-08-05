@@ -33,4 +33,5 @@ urlpatterns = [
     path('osint-aggregator/', include('osint_aggregator.urls')),
     path('port-scanner/', include('port_scanner.urls')),
     path('api-security-tester/', include('api_security_tester.urls')),
+    path('social-engineering/', include('social_engineering.urls')),
 ]

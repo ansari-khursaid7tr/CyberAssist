@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'osint_aggregator',
     'port_scanner',
     'api_security_tester',
+    'social_engineering',
 ]
 
 MIDDLEWARE = [
