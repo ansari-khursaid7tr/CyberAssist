@@ -1,6 +1,6 @@
 # CyberAssist
 
-Welcome to the CyberAssist (Security Tools Suite), a collection of web-based tools designed to enhance your security posture and provide essential insights into various security aspects. This suite includes tools for password strength assessment, keylogging, cryptographic operations, hash generation, IP geolocation, DNS lookup, SSL/TLS certificate checking, and phishing URL detection.
+Welcome to CyberAssist (Security Tools Suite), a collection of web-based tools designed to enhance your security posture and provide essential insights into various security aspects. This suite includes tools for password strength assessment, keylogging, cryptographic operations, hash generation, IP geolocation, DNS lookup, SSL/TLS certificate checking, and phishing URL detection.
 
 ## Table of Contents
 
@@ -63,41 +63,65 @@ Each tool in the suite can be accessed from the home page. Navigate to the speci
 
 ### Security and Monitoring Tools
 
-#### Password Strength Checker
+#### 1. Password Strength Checker
 - **Description**: Assess the robustness of your passwords to ensure they are strong and secure against potential threats.
 - **Usage**: Enter a password and receive feedback on its strength.
 
-#### Keylogger
+#### 2. Keylogger
 - **Description**: Monitor and record keyboard inputs to detect unauthorized activity.
 - **Usage**: Enable keylogging to start recording keystrokes.
 
-#### Phishing URL Detector
+#### 3. Phishing URL Detector
 - **Description**: A tool that checks URLs for phishing indicators to determine their safety.
 - **Usage**: Enter a URL and receive a safety assessment.
 
+#### 4. OSINT Aggregator
+- **Description**: Collect and analyze publicly available information about domains and email addresses for enhanced threat intelligence.
+- **Usage**: Enter a domain or email address to gather OSINT data.
+
+#### 5. API Security Tester
+- **Description**: Analyze and identify vulnerabilities in your APIs to ensure they are secure against potential threats.
+- **Usage**: Enter API endpoints to test for security vulnerabilities.
+
+#### 6. Social Engineering Simulator
+- **Description**: Simulates social engineering attacks to test and improve organizational resilience against manipulative tactics and phishing.
+- **Usage**: Run simulations to evaluate the effectiveness of your security awareness training.
+
+#### 7. Secure Password Generator
+- **Description**: Generate strong, random passwords to enhance your security.
+- **Usage**: Specify password criteria to generate a secure password.
+
 ### Cryptography and Hashing Tools
 
-#### Cryptographic Tool
+#### 1. Cryptographic Tool
 - **Description**: Encrypt and decrypt messages to secure sensitive information.
 - **Usage**: Select an encryption algorithm, enter a key and a message to encrypt or decrypt.
 
-#### Hash Generator
+#### 2. Hash Generator
 - **Description**: Attempt to generate all the possible hash values from the given plain text.
 - **Usage**: Enter plain text and generate its hash values.
 
 ### Network and DNS Tools
 
-#### IP Geolocation Finder
+#### 1. IP Geolocation Finder
 - **Description**: A tool that locates the geographical position of an IP address.
 - **Usage**: Enter an IP address to find its geolocation.
 
-#### DNS Lookup Tool
+#### 2. DNS Lookup Tool
 - **Description**: Quickly retrieves detailed DNS records for a specified domain name.
 - **Usage**: Enter a domain name and retrieve its DNS records.
 
-#### SSL/TLS Certificate Checker
+#### 3. SSL/TLS Certificate Checker
 - **Description**: Check the validity and security of an SSL/TLS certificate for any domain.
 - **Usage**: Enter a domain name to check its SSL/TLS certificate.
+
+#### 4. Port Scanner
+- **Description**: Identify open ports and services on a target system to assess network security and uncover vulnerabilities.
+- **Usage**: Enter an IP address to scan for open ports.
+
+#### 5. Subnet Calculator
+- **Description**: Calculate IP subnets, network addresses, and broadcast addresses for efficient network management.
+- **Usage**: Enter a network address and subnet mask to calculate subnets.
 
 ## Contributing
 
