@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'social_engineering',
     'subnet_calculator',
     'password_generator',
+    'network_speed',
 ]
 
 MIDDLEWARE = [
