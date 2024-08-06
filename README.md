@@ -9,7 +9,6 @@ Welcome to CyberAssist (Security Tools Suite), a collection of web-based tools d
 - [Usage](#usage)
 - [Tools Overview](#tools-overview)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
