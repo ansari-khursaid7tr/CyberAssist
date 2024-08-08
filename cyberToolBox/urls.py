@@ -34,4 +34,5 @@ urlpatterns = [
     path('port-scanner/', include('port_scanner.urls')),
     path('api-security-tester/', include('api_security_tester.urls')),
     path('social-engineering/', include('social_engineering.urls')),
+    path('subnet-calculator/', include('subnet_calculator.urls')),
 ]
