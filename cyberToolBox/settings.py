@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'api_security_tester',
     'social_engineering',
     'subnet_calculator',
+    'password_generator',
 ]
 
 MIDDLEWARE = [
