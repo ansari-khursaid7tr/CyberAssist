@@ -1,0 +1,224 @@
+{% extends 'main/templates/base.html' %}
+
+{% block title %} Network Speed Tester {% endblock title %}
+
+{% block content %}
+<style>
+    .speed-meter {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+    }
+    .speed-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .speed-unit {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 14px;
+    }
+    .meter-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .meter-wrapper {
+        margin: 20px;
+    }
+    .legend {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        text-align: right;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 5px;
+    }
+    .color-indicator {
+        width: 15px;
+        height: 15px;
+        margin-left: 5px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-4 text-center">Network Speed Tester</h3>
+                    <hr />
+                    <div class="position-relative">
+                        <div class="legend">
+                            <div class="legend-item">
+                                <span>Download Speed</span>
+                                <div class="color-indicator" style="background-color: #28a745;"></div>
+                            </div>
+                            <div class="legend-item">
+                                <span>Upload Speed</span>
+                                <div class="color-indicator" style="background-color: #007bff;"></div>
+                            </div>
+                            <div class="legend-item">
+                                <span>Ping</span>
+                                <div class="color-indicator" style="background-color: #ffc107;"></div>
+                            </div>
+                        </div>
+                        <div class="meter-container">
+                            <div class="meter-wrapper">
+                                <div class="speed-meter">
+                                    <svg width="200" height="200" viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                                        <path id="download-arc" d="M100 10 A 90 90 0 0 1 100 190" fill="none" stroke="#28a745" stroke-width="20" stroke-linecap="round"/>
+                                    </svg>
+                                    <div class="speed-value" id="download-speed">0</div>
+                                    <div class="speed-unit">Mbps</div>
+                                </div>
+                            </div>
+                            <div class="meter-wrapper">
+                                <div class="speed-meter">
+                                    <svg width="200" height="200" viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                                        <path id="upload-arc" d="M100 10 A 90 90 0 0 1 100 190" fill="none" stroke="#007bff" stroke-width="20" stroke-linecap="round"/>
+                                    </svg>
+                                    <div class="speed-value" id="upload-speed">0</div>
+                                    <div class="speed-unit">Mbps</div>
+                                </div>
+                            </div>
+                            <div class="meter-wrapper">
+                                <div class="speed-meter">
+                                    <svg width="200" height="200" viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                                        <path id="ping-arc" d="M100 10 A 90 90 0 0 1 100 190" fill="none" stroke="#ffc107" stroke-width="20" stroke-linecap="round"/>
+                                    </svg>
+                                    <div class="speed-value" id="ping-value">0</div>
+                                    <div class="speed-unit">ms</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="speedTestForm">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary" onclick="resetTest()"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="btn btn-primary" onclick="startSpeedTest()"><i class="fas fa-tachometer-alt"></i> Start Test</button>
+                            <button type="button" class="btn btn-secondary" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const downloadArc = document.getElementById('download-arc');
+    const uploadArc = document.getElementById('upload-arc');
+    const pingArc = document.getElementById('ping-arc');
+    const downloadSpeedText = document.getElementById('download-speed');
+    const uploadSpeedText = document.getElementById('upload-speed');
+    const pingValueText = document.getElementById('ping-value');
+
+    const maxDownloadSpeed = 200;
+    const maxUploadSpeed = 100;
+    const maxPing = 200;
+
+    function setArc(arc, value, max) {
+        const normalizedValue = Math.min(value, max) / max;
+        const angle = normalizedValue * 360;
+        const largeArcFlag = angle > 180 ? 1 : 0;
+        const sweepFlag = 1;
+        const endX = 100 + 90 * Math.sin(angle * Math.PI / 180);
+        const endY = 100 - 90 * Math.cos(angle * Math.PI / 180);
+        arc.setAttribute('d', `M100 10 A 90 90 0 ${largeArcFlag} ${sweepFlag} ${endX} ${endY}`);
+    }
+
+    function updateSpeedometers(downloadSpeed, uploadSpeed, ping) {
+        setArc(downloadArc, downloadSpeed, maxDownloadSpeed);
+        setArc(uploadArc, uploadSpeed, maxUploadSpeed);
+        setArc(pingArc, ping, maxPing);
+
+        downloadSpeedText.textContent = downloadSpeed.toFixed(1);
+        uploadSpeedText.textContent = uploadSpeed.toFixed(1);
+        pingValueText.textContent = Math.round(ping);
+    }
+
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    }
+
+    function animateValue(start, end, duration, updateFn) {
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const value = start + (end - start) * easeInOutCubic(progress);
+            updateFn(value);
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    function startSpeedTest() {
+        const testDuration = 5000; // 5 seconds
+
+        animateValue(0, 100, testDuration, (value) => {
+            const downloadSpeed = Math.sin(value / 15) * 50 + Math.random() * 50 + 50;
+            const uploadSpeed = Math.sin(value / 15) * 25 + Math.random() * 25 + 25;
+            const ping = Math.sin(value / 15) * 50 + 50 + Math.random() * 20;
+            updateSpeedometers(downloadSpeed, uploadSpeed, ping);
+        });
+
+        setTimeout(showResults, testDuration);
+    }
+
+    function showResults() {
+        const downloadSpeed = Math.random() * 100 + 50;
+        const uploadSpeed = Math.random() * 50 + 25;
+        const ping = Math.random() * 50 + 10;
+
+        animateValue(0, 100, 1000, (value) => {
+            const progress = value / 100;
+            updateSpeedometers(
+                downloadSpeed * progress,
+                uploadSpeed * progress,
+                ping * progress
+            );
+        });
+    }
+
+    function resetTest() {
+        animateValue(100, 0, 500, (value) => {
+            const progress = value / 100;
+            updateSpeedometers(
+                parseFloat(downloadSpeedText.textContent) * progress,
+                parseFloat(uploadSpeedText.textContent) * progress,
+                parseFloat(pingValueText.textContent) * progress
+            );
+        });
+    }
+
+    function goBack() {
+        window.location.href = "{% url 'home' %}";
+    }
+
+    // Initialize speedometers
+    updateSpeedometers(0, 0, 0);
+</script>
+{% endblock %}

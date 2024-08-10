@@ -36,4 +36,5 @@ urlpatterns = [
     path('social-engineering/', include('social_engineering.urls')),
     path('subnet-calculator/', include('subnet_calculator.urls')),
     path('password-generator/', include('password_generator.urls')),
+    path('network-speed/', include('network_speed.urls')),
 ]
