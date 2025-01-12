@@ -133,6 +133,6 @@ We welcome contributions to improve the Security Tools Suite! Please follow thes
 5. Create a pull request to the main repository.
 
 ---
-[Live Demo](#https://cyber-assist.vercel.app/)
+[Live Demo](https://cyber-assist.vercel.app/)
 
 Feel free to reach out if you have any questions or need further assistance. Happy securing!
